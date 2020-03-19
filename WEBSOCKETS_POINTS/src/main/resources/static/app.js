@@ -39,7 +39,7 @@ var app = (function () {
             stompClient.subscribe('/topic/newpoint', function (eventbody) {
                 var theObject=JSON.parse(eventbody.body);
                 addPointToCanvas(new Point(theObject.x, theObject.y));
-                alert("mensaje enviado");
+                //alert("mensaje enviado");
 
             });
         });
