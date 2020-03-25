@@ -1,5 +1,8 @@
 var app = (function () {
 
+    var path='/topic/newpoint.';
+    var num;
+
     class Point{
         constructor(x,y){
             this.x=x;
@@ -28,15 +31,19 @@ var app = (function () {
     };
 
 
-    var connectAndSubscribe = function () {
+    var connectAndSubscribe = function (id) {
         console.info('Connecting to WS...');
+        num = id;
         var socket = new SockJS('/stompendpoint');
         stompClient = Stomp.over(socket);
+        console.log(id);
+
+
         
         //subscribe to /topic/TOPICXX when connections succeed
         stompClient.connect({}, function (frame) {
             console.log('Connected: ' + frame);
-            stompClient.subscribe('/topic/newpoint', function (eventbody) {
+            stompClient.subscribe(path.concat(id), function (eventbody) {
                 var theObject=JSON.parse(eventbody.body);
                 addPointToCanvas(new Point(theObject.x, theObject.y));
                 //alert("mensaje enviado");
@@ -50,9 +57,10 @@ var app = (function () {
 
     return {
 
+
         init: function () {
             var can = document.getElementById("canvas");
-            
+            num = null;
             //websocket connection
             connectAndSubscribe();
         },
@@ -62,8 +70,11 @@ var app = (function () {
             console.info("publishing point at "+pt);
             //addPointToCanvas(pt);
             //stompClient.send("/topic/newpoint", {}, JSON.stringify({x:10,y:10}));
-            stompClient.send("/topic/newpoint", {}, JSON.stringify(pt));
-
+            if (num != null) {
+                stompClient.send(path.concat(num), {}, JSON.stringify(pt));
+            }else{
+                alert("No conection specified");
+            }
             //publicar el evento pues podria ser
         },
         disconnect: function () {
@@ -72,7 +83,8 @@ var app = (function () {
             }
             setConnected(false);
             console.log("Disconnected");
-        }
+        },
+        connectAndSubscribe:connectAndSubscribe
     };
 
 })();
