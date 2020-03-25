@@ -13,6 +13,7 @@ Para esto, realice lo siguiente:
 ![lab2](https://user-images.githubusercontent.com/43153078/77556341-648f3000-6e86-11ea-9769-f1ac1c05bcd0.PNG)
 3. Compile y ejecute su aplicación. Abra la aplicación en varias pestañas diferentes (para evitar problemas con el caché del navegador, use el modo 'incógnito' en cada prueba).
 4. Ingrese los datos, ejecute la acción del botón, y verifique que en todas la pestañas se haya lanzado la alerta con los datos ingresados.
+
 5. Haga commit de lo realizado, para demarcar el avance de la parte 2.
 
 
@@ -76,5 +77,6 @@ Verifique la funcionalidad: igual a la anterior, pero ahora dibujando polígonos
 
 
 4. A partir de los diagramas dados en el archivo ASTAH incluido, haga un nuevo diagrama de actividades correspondiente a lo realizado 5. hasta este punto, teniendo en cuenta el detalle de que ahora se tendrán tópicos dinámicos para manejar diferentes dibujos simultáneamente.
-Haga commit de lo realizado.
+
+5. Haga commit de lo realizado.
 
