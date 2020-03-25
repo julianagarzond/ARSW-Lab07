@@ -1,6 +1,6 @@
 var app = (function () {
 
-    var path='/topic/newpoint.';
+
     var num;
 
     class Point{
@@ -20,7 +20,9 @@ var app = (function () {
         ctx.stroke();
     };
     
-    
+
+
+
     var getMousePosition = function (evt) {
         canvas = document.getElementById("canvas");
         var rect = canvas.getBoundingClientRect();
@@ -32,6 +34,7 @@ var app = (function () {
 
 
     var connectAndSubscribe = function (id) {
+
         console.info('Connecting to WS...');
         num = id;
         var socket = new SockJS('/stompendpoint');
@@ -43,12 +46,32 @@ var app = (function () {
         //subscribe to /topic/TOPICXX when connections succeed
         stompClient.connect({}, function (frame) {
             console.log('Connected: ' + frame);
-            stompClient.subscribe(path.concat(id), function (eventbody) {
+            stompClient.subscribe('/topic/newpoint.'+num, function (eventbody) {
                 var theObject=JSON.parse(eventbody.body);
                 addPointToCanvas(new Point(theObject.x, theObject.y));
                 //alert("mensaje enviado");
 
             });
+
+            stompClient.subscribe('/topic/newpolygon.'+num, function (eventbody) {
+                var puntico = null;
+                var theObject=JSON.parse(eventbody.body);
+                var c2 = canvas.getContext('2d');
+                c2.fillStyle = '#F7D910';
+                c2.clearRect(0, 0, 800, 600);
+                c2.beginPath();
+                theObject.map(function (puntoFinal ){
+                    if (puntico == null ){
+                        puntico = puntoFinal;
+                        c2.moveTo(puntico.x, puntico.y);
+                    }else {
+                        c2.lineTo(puntoFinal.x,puntoFinal.y);
+                    }
+                });
+                c2.closePath();
+                c2.fill();
+
+            })
         });
 
     };
@@ -60,7 +83,12 @@ var app = (function () {
 
         init: function () {
             var can = document.getElementById("canvas");
+            can.addEventListener("pointerdown",function (evento) {
+                var mouse = getMousePosition(evento);
+                app.publishPoint(mouse.x, mouse.y);
+            })
             num = null;
+
             //websocket connection
             connectAndSubscribe();
         },
@@ -71,7 +99,7 @@ var app = (function () {
             //addPointToCanvas(pt);
             //stompClient.send("/topic/newpoint", {}, JSON.stringify({x:10,y:10}));
             if (num != null) {
-                stompClient.send(path.concat(num), {}, JSON.stringify(pt));
+                stompClient.send('/app/newpoint.'+num, {}, JSON.stringify(pt));
             }else{
                 alert("No conection specified");
             }
@@ -84,7 +112,8 @@ var app = (function () {
             setConnected(false);
             console.log("Disconnected");
         },
-        connectAndSubscribe:connectAndSubscribe
+        connectAndSubscribe:connectAndSubscribe,
+
     };
 
 })();
